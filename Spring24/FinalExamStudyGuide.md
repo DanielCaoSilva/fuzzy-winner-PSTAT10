@@ -1,9 +1,3 @@
----
-title: "PSTAT 10 - Final Exam Study Guide"
-format: pdf
-editor: visual
----
-
 # Study Guide for Final Exam: Introduction to Data Science with R Programming and SQL
 
 ## Vocabulary Terms and Definitions

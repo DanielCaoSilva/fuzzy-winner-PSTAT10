@@ -7,8 +7,8 @@ run_anova <- function(dataframe){
   # get the pieces for SSE
   sum_stats <- dataframe %>% 
     group_by(x) %>% 
-    summarize(Si = var(y), 
-              ybar_i = mean(y),
+    summarize(Si = <function>(y), 
+              ybar_i = <function>(y),
               n = n())
   
   SSE <- sum(sum_stats$Si * (sum_stats$n - 1))
@@ -19,17 +19,17 @@ run_anova <- function(dataframe){
   df2 <- N-a
   
   # Calculate MSE
-  MSE <- SSE/df2
+  MSE <- <variable>/<variable>
   
   # Get SSE
-  y_ddot <- mean(dataframe$y)
+  y_ddot <- <function>(dataframe$y)
   
   # using n from sum_stats allows for unbalanced datasets
   SST <- sum(sum_stats$n*(sum_stats$ybar_i - y_ddot)^2)
   df1 <- (a-1)
   MST <- SST/df1
   
-  F <- MST / MSE
+  F <- <variable> / <variable>
   
   pval <- pf(F, df1, df2, lower.tail=FALSE)
   

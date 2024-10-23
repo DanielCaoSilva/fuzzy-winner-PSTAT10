@@ -41,3 +41,27 @@ run_anova <- function(dataframe){
   
   return(results)
 }
+
+# Part b - Loading the data (missing the function call and kable stuff)
+google <- c(46, 49, 51, 42)
+waze <- c(44, 47, 47, 43)
+gut <- c(50, 51, 45, 43)
+commute_df <- data.frame(
+  time = c(google, waze, gut),
+  method = c(rep("google", 4),
+    rep("waze", 4),
+    rep("gut",4))
+)
+
+# Part c - Loading the data (missing the function calls and kable stuff)
+t_100 <- c(21.8, 21.9, 21.7, 21.6, 21.7)
+t_125 <- c(21.7, 21.4, 21.5, 21.4)
+t_150 <- c(21.9, 21.8, 21.8, 21.6, 21.5)
+t_175 <- c(21.9, 21.7, 21.8, 21.4)
+brick_df <- data.frame(
+  density = c(t_100, t_125, t_150, t_175),
+  temp = c(rep("100", 5),
+    rep("125", 4),
+    rep("150", 5),
+    rep("175", 4))
+)

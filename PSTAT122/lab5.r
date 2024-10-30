@@ -1,3 +1,7 @@
+# Section Notes - Daniel Cao Silva
+
+
+# Simulation Section
 set.seed(10282024)
 norm_data1 <- rnorm(n=100, mean=2, sd=4)
 
@@ -19,6 +23,7 @@ ggplot(data=norm_data_all, mapping = aes(x=x, y=y)) +
     geom_boxplot()
 # they look similar so we need to run an ANOVA to see if there is a difference in means
 
+# ANOVA - 
 model1 <- aov(y ~ x, data=norm_data_all)
 summary(model1)
 
@@ -46,7 +51,7 @@ summary(model1)
 # but since there is none then it is neither
 
 
-# Estimating Power and the probability of a Type 2 error
+# Estimation - Estimating Power and the probability of a Type 2 error
 reps <- 1000
 pvals <- NA
 
@@ -71,3 +76,19 @@ sum(pvals >= 0.05)/reps
 sum(pvals < 0.05)/reps
 # typically we want a power of at least 80% or so. This is low because the true diff in means
 # is actually very small
+
+
+# For the Lab
+
+# Part 1
+# This is essentially the same as what was done 'Simulation' section above, but with a gamma distribution. 
+# Don't forget the interpret the results
+
+# Part 2 
+# Use the `perm_test` function from the last class and run the aov and write up about the results
+
+# Part 3
+# Wrap the code from part 1 and 2 in a for-loop and analyze the results
+
+# Part 4 
+# Exercises from the text

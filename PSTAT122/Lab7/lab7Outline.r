@@ -1,5 +1,6 @@
-# Part 1
+##### Lab 7 - PSTAT 122 #####
 
+# Part 1
 # Dataframe loading
 control <- c()
 jumpingjacks <- c()
@@ -16,6 +17,12 @@ breath_df <- data.frame(
         rep("no", length(control) + length(jumpingjacks)),
         rep("yes", length(armsup) + length(both)))
 )
+
+# Methods
+# <Insert Methods description>
+
+# Results
+# <Insert Results description>
 
 # Plots
 library(ggplot2)
@@ -70,4 +77,37 @@ kable(output)
 f <- summary(model1)$fstatistic
 p_val <- pf(f[1], f[2], f[3], lower.tail=FALSE)
 
+#<Insert p-value analysis>
+
+# Discussion
+#<Insert Discussion Section>
+
 # Part 2
+# 1)
+# df loading
+approach1 <- c(1000, 1500, 1200, 1800, 1600, 1100, 1000, 1250)
+approach2 <- c(1500, 1800, 2000, 1200, 2000, 1700, 1800, 1900)
+approach3 <- c(900, 1000, 1200, 1500, 1200, 1550, 1000, 1100)
+donation <- data.frame(
+    contribution = c(approach1, approach2, approach3),
+    approach = c(rep("1", 8), rep("2", 8), rep("3", 8))
+)
+# a) run aov on the data to check for differences in the mean contribution and save p-value
+# b) run lm and check p-value consistency with ANOVA
+
+# 2)
+# df load
+circuit <- data.frame(
+    thickness = c(
+        14.037, 16.165, 13.972, 13.907,
+        13.880, 13.860, 14.032, 13.914,
+        14.821, 14.757, 14.843, 14.878,
+        14.888, 14.921, 14.415, 14.932),
+    A = rep(c(rep("low", 4), rep("high", 4)), 2),
+    B = c(rep("low", 8), rep("high", 8))
+)
+# a) Estimate the factor effects (hint: use `lm`)
+# b) Report the p-value from `lm` and write about conclusions 
+#    and evaluate the individual coefficient p-values 
+#    (hint: use `summary(<model_name>)$fstatistic`)
+# c) Write down a regression equation similar to what was seen in lecture 14 slide 26

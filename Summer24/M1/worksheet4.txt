@@ -1,0 +1,31 @@
+## WORKSHEET 4
+
+## 1 - Given the vector: x <- c(3,7,7,8,9,10,1) use the function which() to 
+##     determine the index position of elements greater than ‘7’.
+x <- c(3,7,7,8,9,10,1)
+
+## 4 - FACTORS
+#a) Create a vector consisting of the following elements: B, B, D, E.
+
+#b) Convert this vector to a factor.
+
+#c) Show the levels of this factor.
+
+#d) Change the first level of this factor to A. 
+#   (HINT: Use [ ] notation. Look up levels in RStudio help)
+
+## 5 - LISTS
+## In Lecture 2 DEMO 3, we saw the results of combining objects with different
+## types. Here is the code again:
+both = c("dog",3,"cat","mouse",7,12,9,"chicken")
+both
+
+## R provides an object called a list that can store different types of 
+## objects without having to change their modes. Lists in R are created 
+## using list() function.
+## To check whether a given R object is a list, use is.list.
+## Use RStudio help to find the syntax for the list function.
+
+## Write an R program to create a list containing the elements shown in 
+## the vector ‘both’.
+

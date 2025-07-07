@@ -4,6 +4,12 @@
 ##     determine the index position of elements greater than ‘7’.
 x <- c(3,7,7,8,9,10,1)
 
+## 2 - Use the function sub() to replace ‘B’ in “PSTAT 10 , PSTAT 5LS, PSTAT 120B”
+##     with ‘A’.
+
+## 3 - Using the pre-defined constants in R, write code to return the names of 
+##     the months JUNE, JULY, AUGUST.
+
 ## 4 - FACTORS
 #a) Create a vector consisting of the following elements: B, B, D, E.
 

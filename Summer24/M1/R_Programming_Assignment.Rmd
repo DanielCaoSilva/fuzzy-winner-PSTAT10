@@ -1,0 +1,309 @@
+---
+title: "R Programming Practice Assignment"
+author: "Your Name"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Part 1: Conditional Probability with Data Frames and Tables
+
+## Question 1: Survey Data Analysis
+
+### a) Create a data frame with columns: StudentID, Gender, Subject, GradeLevel.
+```{r}
+# Your R code here
+
+```
+
+### b) Convert it to a contingency table showing Gender vs Subject using table().
+```{r}
+# Your R code here
+
+```
+
+### c) Use prop.table() to calculate conditional probability P(Math | Male).
+```{r}
+# Your R code here
+
+```
+
+### d) Calculate the conditional probability P(Female | Science).
+```{r}
+# Your R code here
+
+```
+
+### e) Find P(Arts | GradeLevel = College).
+```{r}
+# Your R code here
+
+```
+
+## Question 2: Medical Testing Scenario
+
+### a) Create a data frame with columns: PatientID, Disease (Present/Absent), TestResult (Positive/Negative).
+```{r}
+# Your R code here
+
+```
+
+### b) Create a contingency table for Disease vs TestResult.
+```{r}
+# Your R code here
+
+```
+
+### c) Use prop.table() to calculate the sensitivity P(Positive Test | Disease Present).
+```{r}
+# Your R code here
+
+```
+
+### d) Calculate the specificity P(Negative Test | Disease Absent).
+```{r}
+# Your R code here
+
+```
+
+### e) Find the positive predictive value P(Disease Present | Positive Test).
+```{r}
+# Your R code here
+
+```
+
+## Question 3: Customer Purchase Behavior
+
+### a) Create a data frame with columns: CustomerID, AgeGroup (Young/Middle/Senior), PurchaseCategory (Electronics/Clothing/Books).
+```{r}
+# Your R code here
+
+```
+
+### b) Make a contingency table for AgeGroup vs PurchaseCategory.
+```{r}
+# Your R code here
+
+```
+
+### c) Calculate P(Electronics | Young) using prop.table().
+```{r}
+# Your R code here
+
+```
+
+### d) Find P(Young | Electronics).
+```{r}
+# Your R code here
+
+```
+
+### e) Compare purchase patterns across age groups using proportions.
+```{r}
+# Your R code here
+
+```
+
+
+# Part 2: Data Visualization
+
+## Question 4: Sales Performance Analysis
+
+### a) Create a data frame with columns: Rep (Alice, Bob, Carol), Quarter (Q1–Q4), Sales.
+```{r}
+# Your R code here
+
+```
+
+### b) Make a bar plot showing total sales by representative using barplot().
+```{r}
+# Your R code here
+
+```
+
+### c) Create a bar plot showing quarterly sales for each rep.
+```{r}
+# Your R code here
+
+```
+
+### d) Add appropriate titles, labels, and colors to your plots.
+```{r}
+# Your R code here
+
+```
+
+### e) Make a horizontal bar plot of average quarterly sales by rep.
+```{r}
+# Your R code here
+
+```
+
+## Question 5: Student Grade Distribution
+
+### a) Create a data frame with columns: StudentID, Subject (Math/Science/English), Grade.
+```{r}
+# Your R code here
+
+```
+
+### b) Make histograms for each subject's grade distribution using hist().
+```{r}
+# Your R code here
+
+```
+
+### c) Create box plots comparing grade distributions across subjects using boxplot().
+```{r}
+# Your R code here
+
+```
+
+### d) Make a bar plot showing average grades by subject.
+```{r}
+# Your R code here
+
+```
+
+### e) Add proper titles, labels, and colors to all visualizations.
+```{r}
+# Your R code here
+
+```
+
+## Question 6: Temperature Data Analysis
+
+### a) Create a data frame with columns: Day, Season (Spring/Summer/Fall/Winter), Temperature.
+```{r}
+# Your R code here
+
+```
+
+### b) Create histograms for temperature in each season.
+```{r}
+# Your R code here
+
+```
+
+### c) Make box plots showing temperature distribution by season.
+```{r}
+# Your R code here
+
+```
+
+### d) Create a bar plot showing average temperature by season.
+```{r}
+# Your R code here
+
+```
+
+### e) Use different colors for each season and add proper labels.
+```{r}
+# Your R code here
+
+```
+
+
+# Part 3: Integration Challenges
+
+## Question 7: Store Sales Analysis
+
+### a) Create a data frame with columns: Month, Product (Electronics/Clothing/Books), Sales, Customers.
+```{r}
+# Your R code here
+
+```
+
+### b) Calculate conditional probabilities: P(High Sales | Electronics), P(Electronics | Month = January).
+```{r}
+# Your R code here
+
+```
+
+### c) Create bar plots comparing sales by product and by month.
+```{r}
+# Your R code here
+
+```
+
+### d) Make box plots showing sales distribution by product category.
+```{r}
+# Your R code here
+
+```
+
+### e) Write a brief interpretation of your findings.
+```{r}
+# Your R code here
+
+```
+
+## Question 8: Survey Data Integration
+
+### a) Create a data frame with 40 respondents: Age (Young/Old), Product (A/B), Satisfaction (High/Low).
+```{r}
+# Your R code here
+
+```
+
+### b) Calculate P(High Satisfaction | Product A), P(Product A | Young).
+```{r}
+# Your R code here
+
+```
+
+### c) Create contingency tables and use prop.table() for analysis.
+```{r}
+# Your R code here
+
+```
+
+### d) Make bar plots and box plots to visualize relationships.
+```{r}
+# Your R code here
+
+```
+
+### e) Summarize your findings about customer satisfaction patterns.
+```{r}
+# Your R code here
+
+```
+
+
+# Part 4: Final Challenge
+
+## Question 9: Complete Data Analysis Project
+
+### a) Create a data frame with student performance data (30 students, 2 subjects, with gender and study method).
+```{r}
+# Your R code here
+
+```
+
+### b) Perform conditional probability analysis using table() and prop.table().
+```{r}
+# Your R code here
+
+```
+
+### c) Create multiple types of visualizations (bar plots, histograms, box plots).
+```{r}
+# Your R code here
+
+```
+
+### d) Calculate and interpret at least 3 different conditional probabilities.
+```{r}
+# Your R code here
+
+```
+
+### e) Write a summary of your findings with supporting visualizations.
+```{r}
+# Your R code here
+
+```

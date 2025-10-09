@@ -2,7 +2,7 @@ source(power_factorial_23.r)
 
 for(p_i in 1: 3){
     beta_mean <-c(5, rep(0.5, 7)
-    beta_se <- c(rep(1,8), rep(0.75,8), rep(1.5,8))
+    beta_se <- matrix(c(rep(1,8), rep(0.75,8), rep(1.5,8))
     power_i <- NA
     power <- NA
     replicates <- 2:10
@@ -25,4 +25,5 @@ all_power <- data.frame(
 ggplot(data=all_power, mapping=aes(x=replicates, y=power,
     group=beta_se, color=beta_se))+
     geom_point()+geom_line()
-    
+
+

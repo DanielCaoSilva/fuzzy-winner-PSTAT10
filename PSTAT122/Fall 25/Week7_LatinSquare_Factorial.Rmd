@@ -8,14 +8,16 @@ author:
   affiliations:
   - name: Fall 2025
 subtitle: 'PSTAT122: Design and Analysis of Experiments'
-output: pdf_document
-format:
-  html:
-    code-fold: true
-    code-line-numbers: true
-    code-copy: true
-    code-tools: true
-    self-contained: true
+output:
+  pdf_document:
+    toc: true
+    number_sections: true
+    toc_depth: 2
+    latex_engine: xelatex
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true    
 
 title: 'Week 7: Latin Squares & 2^2 Factorial (Lab)'
 affiliation-title: Quarter
@@ -100,12 +102,11 @@ We have a balanced Latin-square layout with one observation per treatment-row-co
 
 ## Fit Latin square ANOVA (simulated data)
 
-We fit the standard Latin-square model $y_{ijk} = \mu + 	au_i + 
-ho_j + \gamma_k + arepsilon_{ijk}$ where:
+We fit the standard Latin-square model $y_{ijk} = \mu + \alpha_i + 
+\beta_j + \gamma_k + \epsilon_{ijk}$ where:
 
-- $	au_i$ = treatment effect
-- $
-ho_j$ = row (batch) effect
+- $\alpha_i$ = treatment effect
+- $\beta_j$ = row (batch) effect
 - $\gamma_k$ = column (operator) effect
 
 ```{r}
@@ -113,7 +114,8 @@ model_sim <- aov(y ~ trt + row + col, data=latin_df)
 summary(model_sim)
 ```
 
-What does the $\Pr(\gt F)$-value for `trt` tell us? Does the treatment means differ significantly?
+
+What does the $P( \gt F )$ value for trt tell us? Does the treatment means differ significantly?
 
 - The "trt" row tests whether treatment means are equal.
 - "row" and "col" capture blocking effects. 

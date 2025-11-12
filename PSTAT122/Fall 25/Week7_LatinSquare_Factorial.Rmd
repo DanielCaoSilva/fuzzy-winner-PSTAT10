@@ -1,0 +1,479 @@
+---
+pdf_document:
+  latex_engine: xelatex
+  number_sections: false
+  toc: false
+author:
+- name: Daniel Silva
+  affiliations:
+  - name: Fall 2025
+subtitle: 'PSTAT122: Design and Analysis of Experiments'
+output: pdf_document
+format:
+  html:
+    code-fold: true
+    code-line-numbers: true
+    code-copy: true
+    code-tools: true
+    self-contained: true
+
+title: 'Week 7: Latin Squares & 2^2 Factorial (Lab)'
+affiliation-title: Quarter
+...
+
+```{r}
+knitr::opts_chunk$set(error =  FALSE)
+```
+
+
+# Overview
+
+This section teaches Latin-square blocking and a simple $2^2$ factorial analysis in `R`.
+By the end you should be able to:
+
+- create and analyze a Latin square in `R` using `aov()`,
+- run diagnostics on the fitted model,
+- interpret ANOVA for blocked designs, and
+- simulate a $2^2$ factorial and estimate (via simulation) its power.
+
+# Latin Square
+
+## What is a Latin square?
+
+A Latin square of order $p$ places $p$ treatments so each treatment appears once per row and once per column.
+
+— it blocks two nuisance factors (rows, columns). Use it when there are two systematic nuisance sources (e.g., batches and operators).  
+
+Note that a Latin Square is an incomplete design: not all treatment combinations are observed (unlike a full factorial).
+
+An assumption that we make when using a Latin square design is that the three factors (treatments, and two nuisance factors) do not interact. If this assumption is violated, the Latin Square design error term will be inflated.
+
+Situations where you should use a Latin Square are where you have a single treatment factor and you have two blocking or nuisance factors to consider, which can have the same number of levels as the treatment factor.
+
+
+## Simulated 4X4 Latin square
+
+We simulate a $4\times 4$ Latin square with treatments $A–D$, where rows = batches and columns = operators.
+
+```{r}
+# Build a standard 4x4 Latin square (standard square)
+
+latin4 <- matrix(c("A","B","C","D",
+"B","C","D","A",
+"C","D","A","B",
+"D","A","B","C"),
+nrow=4, byrow=TRUE)
+
+# Create a data frame with one observation per cell
+
+p <- 4
+treats <- as.vector(latin4)
+rows <- rep(1:p, each=p)      # row index
+cols <- rep(1:p, times=p)     # column index
+
+# Simulate a response: baseline + treatment effects + random error
+
+set.seed(20251103)
+mu <- 10
+t_effects <- c(A=0, B=1.2, C=-0.5, D=0.3)   # true treatment effects
+y <- numeric(p*p)
+for(i in 1:(p*p)){
+trt <- treats[i]
+
+# small row and column effects
+
+row_eff <- c(0, 0.6, -0.4, 0.2)[rows[i]]
+col_eff <- c(0, -0.3, 0.5, -0.2)[cols[i]]
+y[i] <- mu + t_effects[trt] + row_eff + col_eff + rnorm(1, 0, 1.5)
+}
+
+latin_df <- data.frame(y = y,
+    trt = factor(treats),
+    row = factor(rows),
+    col = factor(cols)
+)
+
+head(latin_df)
+```
+
+We have a balanced Latin-square layout with one observation per treatment-row-column combination.
+
+## Fit Latin square ANOVA (simulated data)
+
+We fit the standard Latin-square model $y_{ijk} = \mu + 	au_i + 
+ho_j + \gamma_k + arepsilon_{ijk}$ where:
+
+- $	au_i$ = treatment effect
+- $
+ho_j$ = row (batch) effect
+- $\gamma_k$ = column (operator) effect
+
+```{r}
+model_sim <- aov(y ~ trt + row + col, data=latin_df)
+summary(model_sim)
+```
+
+What does the $\Pr(\gt F)$-value for `trt` tell us? Does the treatment means differ significantly?
+
+- The "trt" row tests whether treatment means are equal.
+- "row" and "col" capture blocking effects. 
+- Residuals represent remaining random error.
+
+Treatment effect (trt) – p-value = 0.441 > 0.05, so we fail to reject $H_0$.
+There is no statistically significant difference among the four treatment means after accounting for row and column blocking.
+
+Row and column effects – both have large p-values (0.972 and 0.635), indicating that neither blocking factor explained meaningful variation in the response.
+
+Most variation remains unexplained, where the mean square error (3.02) suggests the blocking factors and treatment effects were weak in this simulated dataset.
+
+In practical terms: the treatments appear to perform similarly, and the blocks (rows and columns) did not account for much variability. Even though no effects were significant here, the Latin-square design correctly partitions variation and demonstrates how blocking works.
+
+### Diagnostic plots
+
+We check model assumptions (normality and equal variance of residuals).
+
+```{r}
+par(mfrow=c(1,2))
+plot(model_sim, which=1)  # Residuals vs Fitted
+plot(model_sim, which=2)  # Q-Q plot
+
+```
+
+Are residuals roughly normal? Is variance stable across fitted values?
+
+- The residuals are randomly scattered around zero with no clear pattern or funnel shape. This suggests that the variance is roughly constant across fitted values (homoscedasticity). A slight curved trend is visible, but with such a small dataset (only 16 points), it’s not concerning.
+
+- The points fall close to the diagonal line, except for a few mild deviations at the tails (points 11 and 14). This indicates the residuals are approximately normally distributed.
+
+
+:::{.callout-note}
+### YOUR TURN
+Apply numerical test for both normality and homoscedasticity of the residuals.
+:::
+
+```{r}
+# residuals from your Latin-square model
+res <- residuals(model_sim)
+
+## 1. Normality: Shapiro–Wilk test
+shapiro.test(res)
+# H0: residuals are normally distributed.
+
+## 2. Homoscedasticity: e.g. Bartlett or Levene across treatments
+bartlett.test(res ~ trt, data = latin_df)
+# H0: residual variance is the same for all treatments.
+
+# (If you have 'car' installed, Levene is also fine:)
+# car::leveneTest(res ~ trt, data = latin_df)
+# H0: equal variances across treatments.
+
+
+```
+
+Both formal diagnostic tests support the adequacy of the Latin-square ANOVA model assumptions.
+The Shapiro–Wilk test yields 
+p=0.3292
+p=0.3292, so we fail to reject normality—there is no evidence that the residuals deviate from a Gaussian distribution.
+
+Likewise, Bartlett’s test for equal variances across treatments gives 
+p=0.6942
+p=0.6942, indicating no evidence of heteroscedasticity.
+Together, these results are consistent with normally distributed errors and homogeneous variance across treatment groups, validating the use of the standard ANOVA for this dataset.
+
+
+## Real example: Rocket-propellant 5×5 Latin square (Montgomery Example 4.3)
+
+We use the coded data from Montgomery (subtracting 25 as in the book). The table layout and coded values are reproduced in the lecture (Chapter 4, Slide 60) and textbook (Table 4.9) . 
+
+Rows = Batches (1,5), Columns = Operators (1,5), Treatments are  ${A,B,C,D,E}$ appear once per row/col.
+
+Values here are the coded (original - 25) values from the book's Table 4.11.
+
+```{r}
+# Coded data (Montgomery Example 4.3, Table 4.11)
+
+coded_values <- c(
+-1, -5, -6, -1, -1,  # row1 
+-8, -1, 5, 2, 11,    # row2
+-7, 13, 1, 2, -4,    # row3
+1,  6,  0,  2,  3,   # row4
+7,  4, -1,  3,  5    # row5
+)
+
+# Treatment layout (A-E in 5x5 Latin square)
+trt_layout <- matrix(c(
+"A","B","C","D","E",
+"B","C","D","E","A",
+"C","D","E","A","B",
+"D","E","A","B","C",
+"E","A","B","C","D"
+), nrow=5, byrow=TRUE)
+
+# Construct data frame
+
+p5 <- 5
+y <- coded_values
+trt <- as.vector(trt_layout)
+row <- rep(1:p5, each=p5)
+col <- rep(1:p5, times=p5)
+
+monty5 <- data.frame(
+y = y,
+trt = factor(trt),
+row = factor(row),
+col = factor(col)
+)
+
+head(monty5)
+```
+
+# Fit Latin square ANOVA
+
+```{r}
+model_m5 <- aov(y ~ trt + row + col, data = monty5)
+summary(model_m5)
+```
+
+Note:
+Compare the `R` output to Table 4.12 in the text book.
+
+It is obvious that formulations differ significantly (p -value 0.0025). Blocking reduced error relative to a completely randomized design.
+
+This model treats aLL three factors (`Batch`, `Operator`, and `Formulation`) as Fixed Effects, consistent with a standard Latin-square analysis.
+
+Note:
+Compare the `R` output to lecture note (Chapter 4, Slide 61).
+
+The structure and statistics are different.. Why do you think that happens?. Let's run the same code as given in the lecture note.
+
+```{r}
+Formulation <- gl(5, 5, labels = c("A", "B", "C", "D", "E"))
+Batch1 <- factor(sort(rep(1:5, 5)))
+Operator1 <- factor(rep(1:5, 5))
+
+Table4.9New <- data.frame(
+Formulation, Batch1, Operator1,
+y = coded_values
+)
+
+modelNew <- aov(y ~ Formulation + Batch1 + Operator1, data=Table4.9New)
+summary(modelNew)
+```
+
+This model treats `Batch1` and `Operator1` as Random Effects (or factors defining the experimental unit) and Formulation as a Fixed Effect.
+
+
+# $2^2$ factorial example
+
+We simulate a balanced $2^2$ design (factors $A$ and $B$ at levels −1 and +1), fit linear model, and interpret main effects & interaction.
+
+```{r}
+set.seed(20251103)
+n_rep <- 6   # replicates per cell (keeps runtime short)
+A <- rep(c(-1, 1), each = 2 * n_rep)
+B <- rep(rep(c(-1, 1), each = n_rep), 2)
+
+# true effects: intercept 10, A = 2, B = -1.5, AB = 1
+
+y <- 10 + 2*A - 1.5*B + 1* (A*B) + rnorm(length(A), 0, 1.2)
+dat22 <- data.frame(y = y, A = factor(A), B = factor(B))
+dat22
+```
+# Fit interaction model with aov
+```{r}
+model_int <- aov(y ~ A * B, data=dat22)
+summary(model_int)
+```
+# Fit full factorial model with interaction
+```{r}
+
+model_fact <- aov(y ~ A+B+ A * B, data=dat22)
+summary(model_fact)
+```
+
+Adding the main effect explicitly in the `aov()` formula does not change the results, since `A * B` already includes both main effects and their interaction.
+
+Both main effects and thier interaction are statisitically significant (p-values < 0.05). Practically, this means: The levels of factor A and factor B both have significant effects on the response variable y, and the effect of factor A on y depends on the level of factor B (and vice versa).
+The response changes not only with A and B individually, but also with their combination. This indicates that the effect of one factor depends on the  level of the other.
+
+
+
+Interpretation:
+
+- Main effect of A: effect of changing A from −1 to +1 averaged over B.
+- Main effect of B: effect of changing B from −1 to +1 averaged over A.
+- Interaction A:B: whether the effect of A depends on the level of B.
+
+### Interaction plot
+
+```{r}
+# with(fact_data, interaction.plot(x.factor = A, trace.factor = B,
+# response = y, fun = mean, type = "b",
+# legend = TRUE, xlab = "A", ylab = "Mean response", trace.label = "B"))
+
+library(dplyr)
+library(ggplot2)
+cell_means <- dat22 %>% group_by(A,B) %>% summarize(m=mean(y), .groups="drop")
+ggplot(cell_means, aes(x=A, y=m, group=B, color=B)) +
+geom_point(size=3) + geom_line() +
+labs(title="Cell means (2x2)", y="Mean response")
+```
+
+The red and blue lines are clearly not parallel in fact, the blue line rises much more steeply. This indicates a strong interaction between $A$ and $B$ (i.e. the effect of $A$ depends on the level of $B$). This plot confirms the statistical results: both main effects ($A$ and $B$) and their interaction ($A\times B$) are significant. 
+
+- Non-parallel lines visually confirm the significant interaction observed in the ANOVA.
+
+# Power simulation
+
+When we fit an ANOVA to our simulated Latin-square data, the p-value from the treatment test tells us whether we detect a true treatment effect (reject $H_0$).
+
+However, even if a real effect exists, we don't always detect it — especially when noise (random error) is large or the sample is small.
+
+The power of a test is the probability of correctly rejecting the null hypothesis when a real effect exists:
+
+Power = $1-\eta = P$(reject $H_0| H_1$ is true)
+
+where, $\alpha$ is the Type I error rate (commonly 0.05), $\eta$ is the probability of a Type II error (failing to detect a true effect).
+
+Estimate power (proportion of times $p < 0.05$) for detecting treatment effect in the $4\times 4$ simulated Latin square setup by repeating the simulation reps times.
+
+We will repeat the simulation many times (reps = 500), each loop creates a new random dataset under the same Latin-square structure (4 treatments × 4 rows × 4 columns).
+
+```{r}
+set.seed(20251103)
+reps <- 500
+pvals_trt <- numeric(reps)
+
+for(i in 1:reps){
+    eps <- rnorm(p*p, 0, 1)
+    ysim <- numeric(p*p)
+    for(j in 1:(p*p)){
+        trt <- treats[j]
+        row_eff <- c(0, 0.6, -0.4, 0.2)[rows[j]]
+        col_eff <- c(0, -0.3, 0.5, -0.2)[cols[j]]
+        ysim[j] <- mu + t_effects[trt] + row_eff + col_eff + eps[j]
+    }
+    tmp <- data.frame(y=ysim, trt=factor(treats), row=factor(rows), col=factor(cols))
+    pv <- summary(aov(y ~ trt + row + col, data=tmp))[[1]]["trt","Pr(>F)"]
+    pvals_trt[i] <- pv
+}
+power_est <- mean(pvals_trt < 0.05)
+power_est
+```
+
+```{r}
+set.seed(20251103)
+reps <- 500
+
+power_est_no_loop <- mean(
+  replicate(reps, {
+    # simulate new errors
+    eps <- rnorm(p*p, 0, 1)
+
+    # generate new y values
+    ysim <- mu + 
+      t_effects[treats] +
+      c(0, 0.6, -0.4, 0.2)[rows] +
+      c(0, -0.3, 0.5, -0.2)[cols] +
+      eps
+
+    tmp <- data.frame(
+      y = ysim,
+      trt = factor(treats),
+      row = factor(rows),
+      col = factor(cols)
+    )
+
+    # extract treatment p-value
+    summary(aov(y ~ trt + row + col, data = tmp))[[1]]["trt", "Pr(>F)"]
+  }) < 0.05
+)
+
+power_est_no_loop
+
+```
+
+
+power_est = 0.32, that means in 32% of simulated experiments the ANOVA correctly rejected $H_0$ when a true treatment effect was present.
+
+A typical design goal is Power ≥ 0.8 (80%).
+
+:::{.callout-note}
+Explore the impact of $\sigma$ on the power. 
+:::
+
+In summary, both Latin-square and factorial designs illustrate how blocking, factorial structure, and replication influence power and inference in experimental design.
+
+Adjusting noise level (σ) and number of replicates per cell can significantly affect the power to detect treatment effects in a Latin-square design.
+
+Increasing the error standard deviation $\sigma$ directly decreases power in the Latin-square ANOVA.
+As $\sigma$ grows, the random error dominates the systematic treatment differences, inflating the residual mean square and reducing the F-ratio for the treatment effect. Consequently, the probability of detecting a real treatment effect (i.e., $\Pr(p\lt0.05)$ falls.)
+Conversely, smaller $\sigma$ reduces within-cell variability, increases the signal-to-noise ratio, and raises the power.
+
+In short: 
+- power decreases as $\sigma$ increases and 
+- power increases as $\sigma$ becomes smaller.
+
+```{r}
+set.seed(20251103)
+reps <- 500
+
+power_est_no_loop <- mean(
+  replicate(reps, {
+    # simulate new errors
+    eps <- rnorm(p*p, 0, 0.5)  # smaller sigma = higher power
+
+    # generate new y values
+    ysim <- mu + 
+      t_effects[treats] +
+      c(0, 0.6, -0.4, 0.2)[rows] +
+      c(0, -0.3, 0.5, -0.2)[cols] +
+      eps
+
+    tmp <- data.frame(
+      y = ysim,
+      trt = factor(treats),
+      row = factor(rows),
+      col = factor(cols)
+    )
+
+    # extract treatment p-value
+    summary(aov(y ~ trt + row + col, data = tmp))[[1]]["trt", "Pr(>F)"]
+  }) < 0.05
+)
+
+power_est_no_loop
+
+```
+
+# Summary 
+Latin Square
+
+ - A design that blocks two distinct nuisance factors (row + column) while studying one treatment factor
+ - structure a pxp grid where each treatment appears once per row and once per columm
+ - Goal: remove systematic variablility due to two know sources so the treatment comparison becomes cleaner
+ 
+ Factorial Design ($2^2$ example)
+ 
+ - a design that studies the effects of tow or more factors simultaneously, including interactions.
+ - structure all combinations fo factor levels are tested (e.g. A(-1/+1), B(-1/+1) gives 4 cells)
+ - Goal: quantify how each factor affects the response and whether factors modify each other's effects
+ 
+ Use latin square when:
+ - You have two nuisance variables you can’t randomize away (e.g., machine operator + time of day).
+ - You believe interactions with blocking factors are negligible.
+ - You have exactly p treatment and can run p^2 experimental units.
+ 
+ Basically cleaning out unwanted variablility 
+ 
+ Latin square is like controlling the environment to make the treatment comparison fair
+ 
+ Use factorial design when:
+ - You care about understanding multiple controllable factors (not nuisance factors).
+ - You want to study interactions — synergy, antagonism, non-additivity.
+ - You have freedom to randomize runs without strong structural constraints.
+ 
+ Basically mapping how factors combine and whether they amplify or counteract each other
+ 
+ Factorial is about testing all combinations to see how factors jointly influence the response.
+

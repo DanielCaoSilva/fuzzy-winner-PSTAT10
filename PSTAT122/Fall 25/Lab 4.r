@@ -1,7 +1,4 @@
-
-
 # Record the data in a dataframe
-
 control <- c()
 jumpingjacks <- c()
 armsup <- c()
@@ -36,14 +33,14 @@ sum_stats <- breath_df %>%
 group_by(jumpingjacks, armsup) %>%
 summarize(mean=mean(time), sd=sd(time), n=n())
 colnames(sum_stats) <- c("Jumping Jacks", "Arms Up", "mean", "sd", "n")
-kable(sum_stats)
+knitr::kable(sum_stats)
 
 # Linear Model
 model1 <- lm(time ~ jumpingjacks + armsup + jumpingjacks*armsup, data=breath_df)
 output <- summary(model1)$coefficients
 # let's make the row names of the table look a little nicer
 rownames(output) <- c("(Intercept)", "Jumping Jacks", "Arms Up", "JJ/AU Interaction")
-kable(output)
+knitr::kable(output)
 
 # Results - P-value
 f <- summary(model1)$fstatistic
